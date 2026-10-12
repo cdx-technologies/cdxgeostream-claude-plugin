@@ -42,4 +42,4 @@ itself — and revoking the key in your CDXGeoStream account disconnects it imme
 
 - Privacy policy: <https://app.cdxgeostream.com/privacy/>
 - Setup guide: <https://cdxgeostream.com/mcp>
-- Support: <https://cdxgeostream.com/support>
+- Support: <https://cdxgeostream.com/support> or support@cdxtech.com
