@@ -14,7 +14,7 @@ calls the CDXGeoStream tools to:
 ## What's in this plugin
 
 - **The CDXGeoStream connector** (`.mcp.json`): one remote MCP server,
-  `https://mcp.cdxgeostream.com/mcp`. Its 16 tools are all read-only.
+  `https://mcp.cdxgeostream.com/mcp`. Its 17 tools are all read-only.
 - **The `cdxgeostream-geo` skill** (`skills/cdxgeostream-geo/`): instructions that help Claude pick
   the right tool, send whole lists in one call, keep costs down, and recover from errors.
 

@@ -13,6 +13,7 @@ unlimited plan). List-accepting tools should be called with the whole list at on
 | `closest_in_list` | `target: string`, `candidates: string[]`, `field?` | `{closest_zip, distance, ...}` | ceil(candidates ÷ 25), min 1 |
 | `find` | `city?`, `county?`, `state?`, `limit?` | `{count, limit, truncated, results: [{zip, city, state}]}` | ceil(rows ÷ 25), min 1 |
 | `demographics` | `zips: string[]` | `{results: [{...demographic fields}]}` | 1 / zip |
+| `area_demographics` | `level` (city \| county \| state), `state`, `name?` (city or county), `fields: string[]` | `{level, name, state, results: [{field, result}]}` — counts summed, medians population-weighted | 1 / field |
 | `geocode` ⌁ | `addresses: string[]`, `field?` | `{results: [{status, latitude, longitude, ...}]}` | 4 / address |
 | `reverse_geocode` ⌁ | `points: [lat, lng][]`, `field?` | `{results: [{zip, city, state, ...}]}` | 4 / point |
 | `census_tract` ⌁ | `locations: string[]`, `field?` (geoid) | `{results: [{geoid, basis, approx?, ...}]}` — `basis` is `address`, `point` or `zip_center` | 2 / location |

@@ -26,7 +26,8 @@ already carries the API key and billing).
 - **ZIPs in a city/county/state**: `find`
 - **Address → coordinates**: `geocode`; **coordinates → place**: `reverse_geocode`
 - **Census tract (FIPS/GEOID)**: `census_tract`
-- **Population / income / age / housing**: `demographics`
+- **Population / income / age / housing**: `demographics` (by ZIP); `area_demographics` for a whole
+  city, county or state
 - **Best order to visit several stops**: `optimize_route`
 - **Is this a real, deliverable mailing address (ZIP+4)**: `verify_address`
 - **Many of the above at once over a big list**: `batch`
@@ -55,8 +56,10 @@ See `reference/functions.md` for the full parameter list of every tool.
   needs one and none was given). `not_checked` means the unit could not be checked — mention it only
   when the user gave a unit, and say that unit is unverified.
 - **Batch, don't loop.** Every list-accepting tool takes many inputs in one call. When the user gives
-  you a column or list of values, pass them all in a single call (or use `batch`) — it's far fewer
-  round-trips. For most tools the credit cost is the same as separate calls; **`distance` is the
+  you a column or list of values, pass them in as few calls as the plan allows (or use `batch`) — it's
+  far fewer round-trips. One call takes up to the plan's per-call limit (`pricing` →
+  `caps.<plan>.call_max_items`; 500 on Free and 1,000 on Pro as shipped): split a longer list into
+  calls of that size. For most tools the credit cost is the same as separate calls; **`distance` is the
   exception** — send every pair to the `distance` tool in one call (1 credit per 25 pairs), never
   through `batch`, where each pair is its own 1-credit op.
 

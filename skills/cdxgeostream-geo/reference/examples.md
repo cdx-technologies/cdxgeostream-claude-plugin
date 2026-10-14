@@ -36,4 +36,6 @@ Each entry in `results` is `{"result": ...}` or `{"error": ..., "status": ...}`,
 
 ## 7. Check budget before a big job
 Before geocoding 5,000 addresses, call `account_balance` and read `credits_available`. 5,000 addresses
-× 4 credits = 20,000 credits — if `credits_available` is lower, tell the user to top up first.
+× 4 credits = 20,000 credits — if `credits_available` is lower, tell the user to top up first. Then send
+them in chunks of the plan's per-call limit (`pricing` → `caps.<plan>.call_max_items`; on Pro, five
+calls of 1,000).

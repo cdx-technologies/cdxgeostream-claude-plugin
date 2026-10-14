@@ -28,12 +28,21 @@ use `route` pairs.
 **Per-item ops:** a "unit" is one item in the list (one ZIP, one address, one route pair, one stop).
 Passing a list of N items costs N × the per-item rate — the same as N separate calls, in one round-trip.
 
-**Inputs that find nothing.** `zip_lookup` bills only the ZIPs it found, on every plan. On the free plan
-these misses cost nothing when they made no paid lookup: an unknown ZIP's tract, a `closest_in_list`
-target that isn't found, a `distance` pair that can't be placed, a verified address that doesn't exist.
-A miss that did make a paid lookup (a street address the geocoder couldn't find) is billed on every
-plan. `radius`, `closest` and `find` are different: a search that returns no rows still bills its
-1-credit minimum. `pricing` → `caps.<plan>.bill_misses` shows the switch (1 bills misses, 0 doesn't).
+**Inputs that find nothing** (`zip_lookup`, `census_tract`, `closest_in_list`, `distance`,
+`geocode`, `reverse_geocode`, `verify_address`, `route`, and those ops in `batch`):
+- **Found nothing in our own data** — an unknown ZIP, a ZIP's tract, a `closest_in_list` target that
+  isn't found, a `distance` pair that can't be placed: free on every plan.
+- **A verified address that doesn't exist**: billed on paid plans, free on the free plan. `pricing` →
+  `caps.<plan>.bill_misses` is this switch (1 bills, 0 doesn't).
+- **A street address or point the map provider looked up and couldn't place** (`geocode`,
+  `reverse_geocode`, `census_tract` given an address, or an address in a `route` pair): billed on
+  every plan, because the lookup was made. A `route` pair whose address can't be found costs what a
+  routed pair costs. If the map provider was down and only the free Census geocoder answered, the
+  miss is billed like a verified address that doesn't exist (paid plans only); an outage alone costs
+  nothing.
+
+`radius`, `closest` and `find` are different: a search that returns no rows still bills its 1-credit
+minimum.
 
 **`distance` is not per-item.** One call is billed on the pairs it carries, 1 credit per 25, so 500
 pairs in one `distance` call cost 20 — while 500 `distance` ops in `batch` cost 500, because each op
