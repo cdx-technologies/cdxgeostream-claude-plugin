@@ -30,7 +30,7 @@ already carries the API key and billing).
 - **Best order to visit several stops**: `optimize_route`
 - **Is this a real, deliverable mailing address (ZIP+4)**: `verify_address`
 - **Many of the above at once over a big list**: `batch`
-- **What does an operation cost / what plan am I on**: `pricing`, `account_balance` (both free)
+- **What does an operation cost / what plan am I on**: `pricing`, `account_balance` (neither costs credits)
 
 See `reference/functions.md` for the full parameter list of every tool.
 
@@ -44,6 +44,16 @@ See `reference/functions.md` for the full parameter list of every tool.
   place a street address at its ZIP or postal code's center. `distance` lists those inputs in `approx`;
   `optimize_route` marks each such stop `approx: true`, and stops sharing a code come back 0 mi apart.
   Tell the user those figures are approximate, and why.
+- **A ZIP's census tract is the tract at the ZIP's center.** A ZIP covers several tracts, so
+  `census_tract` on a ZIP returns `basis: "zip_center"` and `approx: true`. Say so; when the exact tract
+  matters (eligibility, a client deliverable), ask for the street address or `"lat,lng"`.
+- **Straight-line routes have no travel time.** `optimize_route` with `method: straight` returns
+  `travel: "straight_line"` and null `duration_*` fields. Quote its miles as straight-line, never as
+  driving; use `aco` or `here` for drive times.
+- **Say whether a suite was checked.** Each `verify_address` result carries `secondary_status`. Tell the
+  user when it is `unconfirmed` (the unit given is not a known unit there) or `missing` (the building
+  needs one and none was given). `not_checked` means the unit could not be checked — mention it only
+  when the user gave a unit, and say that unit is unverified.
 - **Batch, don't loop.** Every list-accepting tool takes many inputs in one call. When the user gives
   you a column or list of values, pass them all in a single call (or use `batch`) — it's far fewer
   round-trips. For most tools the credit cost is the same as separate calls; **`distance` is the
@@ -53,7 +63,13 @@ See `reference/functions.md` for the full parameter list of every tool.
 ## Credits & cost awareness
 
 Operations are credit-metered against the account's plan. Each successful result includes a
-`credits_remaining` field (and `credits_charged`); `null` means an unlimited plan.
+`credits_remaining` field (the account's live balance) and `credits_charged` (this call alone). On an
+unlimited plan `credits_remaining` is `null` and `credits_charged` is left out.
+
+**What each plan allows** is stated in each tool's description. On the free plan, `geocode` takes ZIP and
+postal codes, and `census_tract` takes those plus `"lat,lng"` points; anything else sent to them (a
+street address, or coordinates sent to `geocode`), and all of `reverse_geocode`, `route` and the road
+`optimize_route` methods, need a paid plan or purchased credits.
 
 - `zip_lookup`/`demographics` cost 1 credit **per item**; `distance` costs 1 credit **per 25
   pairs** in a call (minimum 1, at most 10,000 pairs), so send pairs together; geocoding, reverse geocoding,
@@ -84,8 +100,9 @@ See `reference/errors.md`. In short:
 
 - **Too large / cap exceeded** (e.g. too many optimize stops or batch ops): split the input into
   smaller chunks and call again.
-- **Radius over the plan's reach cap** ("radius exceeds the N-mile per-call limit for your plan"):
-  splitting doesn't help — re-run with a radius ≤ N miles, or tell the user to upgrade.
+- **Radius over the plan's reach cap** ("The Free plan's radius limit is 250 miles. Use a smaller
+  radius, …"): splitting doesn't help — re-run with a radius within the limit, or tell the user to
+  upgrade.
 - **Out of credits**: stop and tell the user to top up; do not retry. **Not enough credits for this
   request**: offer a smaller request, or a top-up.
 - **Invalid input** (names a field): fix that field and call again.
@@ -95,4 +112,8 @@ See `reference/errors.md`. In short:
 - **Per-item not found**: list/batch tools return a `{"status": "not_found"}` entry for the bad
   item and still succeed for the rest — report which inputs weren't found and continue.
 - **Not in the plan**: the plan doesn't include that feature; a purchased top-up or an upgrade
-  unlocks it. Tell the user.
+  unlocks it. Tell the user. `geocode` and `census_tract` refuse only the inputs that need it and run
+  the rest; `reverse_geocode` and `route` return every row `upgrade_required`; road `optimize_route`
+  refuses the call. The message names the feature and why.
+- **Batch arg errors** ("demographic needs [zip, field]; got 1 argument"): add the missing args — the
+  `batch` description lists every op's positional args.

@@ -1,7 +1,7 @@
 {
   "name": "cdxgeostream",
   "displayName": "CDXGeoStream",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "US and Canada ZIP and postal lookups, distance and radius, demographics, geocoding, census tracts, driving routes, route optimization and USPS address verification, through the CDXGeoStream connector.",
   "author": {
     "name": "CDX Technologies",

@@ -28,6 +28,13 @@ use `route` pairs.
 **Per-item ops:** a "unit" is one item in the list (one ZIP, one address, one route pair, one stop).
 Passing a list of N items costs N × the per-item rate — the same as N separate calls, in one round-trip.
 
+**Inputs that find nothing.** `zip_lookup` bills only the ZIPs it found, on every plan. On the free plan
+these misses cost nothing when they made no paid lookup: an unknown ZIP's tract, a `closest_in_list`
+target that isn't found, a `distance` pair that can't be placed, a verified address that doesn't exist.
+A miss that did make a paid lookup (a street address the geocoder couldn't find) is billed on every
+plan. `radius`, `closest` and `find` are different: a search that returns no rows still bills its
+1-credit minimum. `pricing` → `caps.<plan>.bill_misses` shows the switch (1 bills misses, 0 doesn't).
+
 **`distance` is not per-item.** One call is billed on the pairs it carries, 1 credit per 25, so 500
 pairs in one `distance` call cost 20 — while 500 `distance` ops in `batch` cost 500, because each op
 is its own one-pair call. Send pairs to `distance`, not `batch`.
