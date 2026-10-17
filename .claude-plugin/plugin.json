@@ -1,14 +1,16 @@
 {
   "name": "cdxgeostream",
   "displayName": "CDXGeoStream",
-  "version": "1.1.2",
+  "version": "1.1.3",
   "description": "US and Canada ZIP and postal lookups, distance and radius, demographics, geocoding, census tracts, driving routes, route optimization and USPS address verification, through the CDXGeoStream connector.",
   "author": {
     "name": "CDX Technologies",
     "url": "https://cdxgeostream.com"
   },
   "homepage": "https://cdxgeostream.com/mcp",
+  "documentationUrl": "https://cdxgeostream.com/mcp",
   "privacyPolicyUrl": "https://app.cdxgeostream.com/privacy/",
+  "termsOfServiceUrl": "https://app.cdxgeostream.com/terms/",
   "repository": "https://github.com/cdx-technologies/cdxgeostream-claude-plugin",
   "license": "MIT",
   "keywords": ["zip code", "geocoding", "demographics", "census tract", "routing", "address verification"]
